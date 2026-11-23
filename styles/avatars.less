@@ -1,0 +1,54 @@
+@import 'ui-variables';
+
+.sender-avatar {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+  }
+  // A loaded logo covers the initials, on white with a hairline ring.
+  &.has-image {
+    background-color: #fff !important; // beats the inline hue set by the plugin
+    box-shadow: inset 0 0 0 1px fade(#000, 8%);
+    img { opacity: 1; }
+    .sender-avatar-initials { visibility: hidden; }
+  }
+}
+
+// Three-line thread rows: [unread dot or star, 20] [avatar 28] [gap 14] on one line,
+// vertically centred on the card. Mailspring's row renders an inline `align-items: flex-start`.
+.thread-list-narrow {
+  .list-column > div { align-items: center !important; }
+  .icons-column {
+    flex-direction: row;
+    align-items: center;
+    align-self: center;
+    width: auto;
+    margin: 0 14px 0 0;
+    .thread-icon {
+      width: 20px;
+      height: 28px;
+      margin: 0;
+      background-position: 6px center;
+    }
+    .thread-injected-icons { margin: 0; }
+  }
+}

@@ -1,23 +1,21 @@
-# Graphite plugin for Mailspring
+# Sender Avatars for Mailspring
 
-Three additions to [Mailspring](https://getmailspring.com) that make the message list easier to scan:
+Round sender avatars in [Mailspring](https://getmailspring.com)'s three-line thread list, so you recognise who wrote before reading a word.
 
-- **Sender avatars** in the thread list: colored initials by default, optionally the sender's company logo or Gravatar picture.
-- **A list header** above the thread list and the drafts list: folder name, account, and a compose button.
-- **Drafts as cards**: the Drafts folder uses the same three-line cards as the inbox (avatar, recipients, subject, preview, date), with "Me" for your own address.
+- **Colored initials** for every sender, computed locally.
+- **Company logos** (opt-in), fetched from the sender's own website.
+- **Gravatar pictures** (opt-in).
 
-Designed with **[mailspring-theme-graphite](https://github.com/jblavisse/mailspring-theme-graphite)**, and works with other themes.
+Works with any theme. Looks best with **[mailspring-theme-graphite](https://github.com/jblavisse/mailspring-theme-graphite)**.
 
 ## Privacy and settings
 
-By default the plugin makes **no network request**: avatars are colored initials computed locally.
-
-Two settings turn on remote pictures. Both are off by default.
+By default the plugin makes **no network request**.
 
 | Setting | What it does | What leaves your machine |
 |---|---|---|
-| `plugins.graphite.senderLogos` | Shows the sender's company logo, fetched from the sender's own website (`apple-touch-icon.png`, then `favicon.ico`). Never used for personal webmail domains (Gmail, Outlook, iCloud, Proton, Free, Orange, La Poste…). | The sender's web server sees your IP address and when your list displayed their message, even for mail you never open. No third-party logo service is involved. |
-| `plugins.graphite.gravatar` | Shows the sender's [Gravatar](https://gravatar.com) picture when one exists. | Gravatar receives a SHA-256 hash of each sender's address, the same way Mailspring's own contact card already queries Gravatar. |
+| `plugins.avatars.senderLogos` | Shows the sender's company logo from the sender's own website (`apple-touch-icon.png`, then `favicon.ico`). Never used for personal webmail domains (Gmail, Outlook, iCloud, Proton, Free, Orange, La Poste…). | The sender's web server sees your IP address and when your list displayed their message, even for mail you never open. No third-party logo service is involved. |
+| `plugins.avatars.gravatar` | Shows the sender's [Gravatar](https://gravatar.com) picture when one exists. | Gravatar receives a SHA-256 hash of each sender's address, as Mailspring's own contact card already does. |
 
 Failed or tiny images are not requested again during the session. Sender domains are validated, so an email address cannot point a request at a path, a port, an IP address or your local network.
 
@@ -25,11 +23,11 @@ Failed or tiny images are not requested again during the session. Sender domains
 
 ```json
 "plugins": {
-  "graphite": { "senderLogos": true, "gravatar": true }
+  "avatars": { "senderLogos": true, "gravatar": true }
 }
 ```
 
-Or, without quitting: **Developer → Toggle Developer Tools → Console**, then run `AppEnv.config.set('plugins.graphite.senderLogos', true)`.
+Or, without quitting: **Developer → Toggle Developer Tools → Console**, then run `AppEnv.config.set('plugins.avatars.senderLogos', true)`.
 
 ## Install
 
@@ -42,28 +40,26 @@ Or, without quitting: **Developer → Toggle Developer Tools → Console**, then
 **From Git (to follow updates)**
 
 ```bash
-git clone https://github.com/jblavisse/mailspring-plugin-graphite.git
+git clone https://github.com/jblavisse/mailspring-plugin-avatars.git
+ln -s "$PWD/mailspring-plugin-avatars" "$HOME/Library/Application Support/Mailspring/packages/mailspring-plugin-avatars"
 ```
 
-Link it into Mailspring's packages folder (macOS path shown; on Linux use `~/.config/Mailspring/packages`):
-
-```bash
-ln -s "$PWD/mailspring-plugin-graphite" "$HOME/Library/Application Support/Mailspring/packages/mailspring-plugin-graphite"
-```
-
-Restart Mailspring.
+On Linux, the packages folder is `~/.config/Mailspring/packages`. Restart Mailspring.
 
 ## How it works
 
-- **Avatars** take the `ThreadListIcon` slot of the three-line thread list. That slot shows a single component, so the open-tracking status icon no longer appears in that layout. It still appears in the message header and in the wide list.
-- **Drafts** keep Mailspring's own `DraftList` component (selection, double-click to edit, delete). The plugin swaps the 39px list it renders for 78px cards that reuse the inbox classes.
-- The header uses Mailspring's translations (`localized()`); folder names and labels follow your interface language.
-- Deactivating the plugin restores Mailspring's components as they were registered.
+- The avatar takes the `ThreadListIcon` slot of the three-line thread list. That slot shows a single component, so the open-tracking status icon no longer appears in that layout. It still appears in the message header.
+- The unread dot (or the star on hover) sits left of the avatar, both centred on the card.
+- The avatar is registered as `SenderAvatar`, so other plugins can reuse it: [mailspring-plugin-draft-cards](https://github.com/jblavisse/mailspring-plugin-draft-cards) shows it on draft cards.
+
+## Related plugins
+
+- [mailspring-plugin-list-header](https://github.com/jblavisse/mailspring-plugin-list-header): folder name and a compose button above the list.
+- [mailspring-plugin-draft-cards](https://github.com/jblavisse/mailspring-plugin-draft-cards): the Drafts folder as inbox-style cards.
 
 ## Compatibility
 
-- Mailspring **1.26** or later.
-- Reads Mailspring's private `ComponentRegistry._registry` to restore built-in components exactly. If a Mailspring release changes it, the plugin falls back to the stock drafts layout and logs `[graphite]` in the console.
+Mailspring **1.26** or later. Reads Mailspring's private `ComponentRegistry._registry` to keep the open-tracking icon registered; a future release may need an update.
 
 ## Development
 
@@ -71,7 +67,7 @@ Restart Mailspring.
 npm test
 ```
 
-Runs `test/self-check.js` with Node. It mocks the few Mailspring APIs involved and covers domain validation, personal-domain detection, opt-in settings, sender selection, name cleanup, dates and the drafts-list swap.
+Covers domain validation, personal-domain detection, opt-in settings, the failed-image cache and sender selection.
 
 ## License
 

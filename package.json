@@ -1,13 +1,13 @@
 {
-  "name": "mailspring-plugin-graphite",
-  "displayName": "Graphite",
+  "name": "mailspring-plugin-avatars",
+  "displayName": "Sender Avatars",
   "version": "1.0.0",
-  "description": "Sender avatars, a list header with a compose button, and drafts as cards for Mailspring.",
+  "description": "Sender avatars in Mailspring's thread list: initials, with opt-in company logos and Gravatar. Private by default.",
   "main": "./lib/main",
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jblavisse/mailspring-plugin-graphite"
+    "url": "https://github.com/jblavisse/mailspring-plugin-avatars"
   },
   "engines": { "mailspring": ">=1.26.0" },
   "windowTypes": { "default": true },
